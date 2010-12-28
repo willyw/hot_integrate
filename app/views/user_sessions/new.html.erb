@@ -1,0 +1,18 @@
+<h1>Login</h1>
+
+<% form_for @user_session, :url => user_session_path do |f| %>
+	<div id="input-wrapper">
+	  <%= f.label :email %><br />
+	  <%= f.text_field :email %>
+		<%#= show_error_on :email, @user_session   %>
+	  <br />
+	  <%= f.label :password %><br />
+	  <%= f.password_field :password %>
+		<%#= show_error_on :password, @user_session   %>
+	  <br />
+	  <%= f.check_box :remember_me %><%= f.label :remember_me %><br />
+	  <br />
+	  <%= f.submit "Login" %>
+	</div>
+<% end %>
+
