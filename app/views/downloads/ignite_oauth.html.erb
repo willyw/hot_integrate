@@ -1,0 +1,8 @@
+haha, click 
+
+<% destination = @session.authorize_url+ "&"  +
+      "oauth_callback=" + CGI::escape( return_oauth_url  ) %>
+
+
+
+<%= link_to "this", destination %> to login to dropbox

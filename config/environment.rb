@@ -10,7 +10,9 @@ Rails::Initializer.run do |config|
   config.gem 'uuidtools'
   config.gem 'mime-types', :lib => 'mime/types'
   config.gem 'authlogic'
-
+  # config.gem 'dropbox'
+  config.gem 'delayed_job', :version => '~>2.0.4'
+  
   config.time_zone = 'UTC'
 
 end

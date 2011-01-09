@@ -1,0 +1,13 @@
+ahahha, inside the show_files
+
+<% form_tag user_downloads_url(current_user) do %>
+	<%= text_area_tag 'links' %>
+	<%=  submit_tag %>
+<% end %>
+
+<%= "the RailsRott is #{Rails.root}"%>
+<% config = YAML::load(File.read(Rails.root.join('config/dutil/dutil_hotfile.yml'))) %>
+<%= "The config hotfile is #{config.inspect}"%>
+<%= "The password is #{config["hotfile"]["password"]}"%>
+<br />
+<%= "The username is #{config["hotfile"]["username"]}"%>
