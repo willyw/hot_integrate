@@ -18,6 +18,12 @@ class Download < ActiveRecord::Base
   LINK_MATCHER = {1 => /^(http:\/\/)?hotfile.com/, 
                   2 => /^(http:\/\/)?fileserve.com/,
                  3 => /^(http:\/\/)?fileserve.com/}
+                 
+  DOWNLOADER_MATCHER = {
+    1 => "hotfile",
+    2 => "fileserve",
+    3 => "rapidshare"
+  }
   
   def self.create_batch( current_user, unfiltered_links )
     download_array = []
@@ -67,18 +73,25 @@ class Download < ActiveRecord::Base
      # assume that it is always hotfile
      if self.type_id == 1 # hotfile
        check_hotfile
-     else
+     elsif self.type_id == 2
+       check_fileserve
      end
+     
+     # see all those checking.. we can replace it with meta-programming
+     
+     # if the link matches none of the registered type_id, its status 
+     # download is false.. skipped. Admin will be notified
   end
   
   
   
   def execute_download
-    if download.status_download 
+    if download.status_download  and self.type_id != 0
       # download for real
       if self.type_id == 1 # hotfile
          download_hotfile
-       else
+       elsif self.type_id == 2 
+         download_fileserve
        end
     else
       #send email to the user, telling that the link is dead
@@ -105,7 +118,7 @@ class Download < ActiveRecord::Base
     # username= "****"
     #  password = "****"
     # get the usernaem from Rails.root.join("config/dutil/hotfile.yml")
-    config = YAML::load(File.read(Rails.root.join('config/dutil/dutil_hotfile.yml'))) 
+    config = YAML::load(File.read(Rails.root.join('config/dutil/dutil.yml'))) 
     username = config["hotfile"]["username"]
     password = config["hotfile"]["password"]
     
@@ -146,14 +159,13 @@ class Download < ActiveRecord::Base
 
 
       digest = resp.body
-      # >>> 1293124438-1528544627-0d40f186bf6c383ba29c857c6717ff5c  << valid for 30 seconds
     }
 
     puts digest
 
     # username= "***"
     # password = "****"
-    config = YAML::load(File.read(Rails.root.join('config/dutil/dutil_hotfile.yml'))) 
+    config = YAML::load(File.read(Rails.root.join('config/dutil/dutil.yml'))) 
     username = config["hotfile"]["username"]
     password = config["hotfile"]["password"]
 
@@ -184,10 +196,8 @@ class Download < ActiveRecord::Base
 
 
       direct_download_link =  resp.body
-      # >>> 1293124438-1528544627-0d40f186bf6c383ba29c857c6717ff5c  << valid for 30 seconds
     }
     puts "The direct download link is #{direct_download_link}"
-    # http://s346.hotfile.com/get/ee3382c5475ad63335061327ff914b0e54b84877/4d1386c6/1/29a21b53ec29fc41/0/2054845/PIC186.tmp.jpg
 
     regex = /http:\/\/(.*hotfile.com)(.*)/
     uri = ""
@@ -213,8 +223,6 @@ class Download < ActiveRecord::Base
         file.write(resp.body)
        }
     }
-    puts "Yay!!"
-  #  FileUtils.move filename, '~/Dropbox'
     puts "The filename is #{filename}"
     source = Dir.pwd + "/#{filename}"
     destination = "/home/app/Dropbox"

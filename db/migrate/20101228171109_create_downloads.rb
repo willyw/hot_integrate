@@ -9,7 +9,8 @@ class CreateDownloads < ActiveRecord::Migration
       # 0 = dead
       
       t.integer :user_id # one user has many downloads
-      t.integer :type_id # hotfile, rapidshare, etc?
+      t.integer :type_id, :default => 0 # 0 is unknown
+      #hotfile, rapidshare, etc?
       #hotfile type == 1 
       
       t.timestamps

@@ -18,7 +18,6 @@ class DownloadsController < ApplicationController
 
   def create
     # @downloads = Download.create_batch( current_user, params[:links])
-    
     for element in params[:links].gsub(/\s/, " ").squeeze(" ").split(" ")
       puts "the link is ----#{element}----"
     end

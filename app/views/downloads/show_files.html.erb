@@ -6,8 +6,26 @@ ahahha, inside the show_files
 <% end %>
 
 <%= "the RailsRott is #{Rails.root}"%>
-<% config = YAML::load(File.read(Rails.root.join('config/dutil/dutil_hotfile.yml'))) %>
-<%= "The config hotfile is #{config.inspect}"%>
+<% config = YAML::load(File.read(Rails.root.join('config/dutil/dutil.yml'))) %>
 <%= "The password is #{config["hotfile"]["password"]}"%>
 <br />
 <%= "The username is #{config["hotfile"]["username"]}"%>
+<br /><br />
+<%= "The password is #{config["fileserve"]["password"]}"%>
+<br />
+<%= "The username is #{config["fileserve"]["username"]}"%>
+
+
+<% if @downloads %>
+<h2>
+	Hello there, you have <%= @downloads.count %> downloads in queue
+</h2>
+<ul>
+	<% for download in @downloads %>
+		<li>
+			<%= download.link %>
+		</li>
+	<% end %>
+</ul>
+
+<% end %>
