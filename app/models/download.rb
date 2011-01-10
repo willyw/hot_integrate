@@ -5,6 +5,7 @@ require 'digest/md5'
 require 'fileutils'
 
 require 'net/http'
+require 'active_support'
 # end
 
 
