@@ -234,16 +234,51 @@ class Download < ActiveRecord::Base
     self.save
     puts "Done with moving the file to the source"
     puts "checking for the upload"
-    self.delay.is_upload_done?
-    puts "done putting the is_upload_done"
-      # end of this download
-    
-      # wait x seconds, 
-      # poll it again to check for the upload readiness
-    
-    
+    wait_for_upload
+
   end
   
+  def wait_for_upload
+    if self.status_upload
+      return 
+    end
+    
+    puts "Gonna enter the loop of waiting"
+    
+    time_to_wait = -1
+    while time_to_wait != 0 do 
+      upload_status =  `~/bin/dropbox.py status`
+      if upload_status != "Idle\n"
+        inner_regex = /\((.*)\)/
+        if  upload_status.match inner_regex
+          upload_data = $1.split(" ")
+          speed = upload_data[0]
+          numerator = upload_data[2]
+          time_unit = upload_data[3]
+          time_to_wait = ""
+          # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
+          if time_unit == "min"
+            time_to_wait =  numerator.to_i.minutes.to_i
+          elsif time_unit == "sec"
+            time_to_wait =  numerator.to_i.seconds.to_i
+          else
+            time_to_wait = numerator.to_i.hours.to_i
+          end
+          puts "next call is #{numerator} #{time_unit} from now\n"*10
+        else
+          time_to_wait = 1.minutes.to_i
+        end
+        puts "Goa sleep for #{time_to_wait} seconds"
+        sleep time_to_wait
+      else
+        self.status_upload = true
+        self.save
+        time_to_wait = 0
+      end
+    end
+    
+  end
+    
   def is_upload_done?
     if self.status_upload 
       break
@@ -267,17 +302,17 @@ class Download < ActiveRecord::Base
           time_to_send = ""
           # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
           if time_unit == "min"
-            time_to_send = Proc.new { numerator.to_i.minutes.from_now }
+            time_to_send =  numerator.to_i.minutes.to_i
           elsif time_unit == "sec"
-            time_to_send = Proc.new {numerator.to_i.seconds.from_now }
+            time_to_send =  numerator.to_i.seconds.to_i
           else
-            time_to_send = Proc.new { numerator.to_i.hours.from_now }
+            time_to_send = numerator.to_i.hours.to_i
           end
 
           puts "next call is #{numerator} #{time_unit} from now\n"*10
-          self.delay.is_upload_done? :run_at => time_to_send
+          
         else
-          self.delay.is_upload_done? :run_at => Proc.new{ 1.minutes.from_now }
+          self.delay.is_upload_done? :run_at =>  1.minutes.from_now 
         end
         # Uploading 1 file (706.4 KB/sec, 3 min left)\n
         # "Uploading 1 file...\nDownloading file list...\n"
