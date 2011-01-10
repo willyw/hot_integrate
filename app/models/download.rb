@@ -227,9 +227,14 @@ class Download < ActiveRecord::Base
     source = Dir.pwd + "/#{filename}"
     destination = "/home/app/Dropbox"
     FileUtils.move source, destination
+    
+    
     self.status_download = true
     self.save
-    self.is_upload_done?
+    puts "Done with moving the file to the source"
+    puts "checking for the upload"
+    self.delay.is_upload_done?
+    puts "done putting the is_upload_done"
       # end of this download
     
       # wait x seconds, 
