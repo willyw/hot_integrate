@@ -235,11 +235,13 @@ class Download < ActiveRecord::Base
     puts "Done with moving the file to the source"
     puts "checking for the upload"
     # wait_for_upload
-    self.delay.wait_for_upload :run_at => 30.seconds.from_now
+    puts "current TIme is #{Time.now}"
+    self.delay(:run_at =>30.seconds.from_now ).wait_for_upload 
 
   end
   
   def wait_for_upload
+    puts "Time in wait_for_upload is #{Time.now}"
     puts "wait_for_upload ahahaha\n"*20
     # if self.status_upload
     #   return 
