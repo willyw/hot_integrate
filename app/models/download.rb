@@ -255,27 +255,29 @@ class Download < ActiveRecord::Base
       #     test_regex = /(sec|min)/  # working
 
       if upload_status != "Idle\n"
-        string_result = "ploading 1 file (2014 KB/sec, 26 sec left)\n"
+        # string_result = "ploading 1 file (2014 KB/sec, 26 sec left)\n"
         inner_regex = /\((.*)\)/
         # it will give "2014 KB/sec, 26 sec left"
-        upload_status.match inner_regex
-        upload_data = $1.split(" ")
-        speed = upload_data[0]
-        numerator = upload_data[2]
-        time_unit = upload_data[3]
-        time_to_send = ""
-        # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
-        if time_unit == "min"
-          time_to_send = Proc.new { numerator.to_i.minutes.from_now }
-        elsif time_unit == "sec"
-          time_to_send = Proc.new {numerator.to_i.seconds.from_now }
+        if  upload_status.match inner_regex
+          upload_data = $1.split(" ")
+          speed = upload_data[0]
+          numerator = upload_data[2]
+          time_unit = upload_data[3]
+          time_to_send = ""
+          # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
+          if time_unit == "min"
+            time_to_send = Proc.new { numerator.to_i.minutes.from_now }
+          elsif time_unit == "sec"
+            time_to_send = Proc.new {numerator.to_i.seconds.from_now }
+          else
+            time_to_send = Proc.new { numerator.to_i.hours.from_now }
+          end
+
+          puts "next call is #{numerator} #{time_unit} from now\n"*10
+          self.delay.is_upload_done? :run_at => time_to_send
         else
-          time_to_send = Proc.new { numerator.to_i.hours.from_now }
+          self.delay.is_upload_done? :run_at => Proc.new{ 1.minutes.from_now }
         end
-
-        puts "next call is #{numerator} #{time_unit} from now\n"*10
-        self.delay.is_upload_done? :run_at => time_to_send
-
         # Uploading 1 file (706.4 KB/sec, 3 min left)\n
         # "Uploading 1 file...\nDownloading file list...\n"
         # "Idle\n"
