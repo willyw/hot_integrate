@@ -132,7 +132,7 @@ class Download < ActiveRecord::Base
     # getting the download link
     Net::HTTP.start("api.hotfile.com") { |http|
       base_req = "/?action=getdirectdownloadlink&"
-      with_link = base_req + "link=#{link_loc}&"
+      with_link = base_req + "link=#{self.link}&"
       with_auth = with_link + username_and_password + "&digest=#{digest}"
       puts with_auth
       resp = http.get( with_auth)
@@ -188,7 +188,7 @@ class Download < ActiveRecord::Base
     # getting the download link
     Net::HTTP.start("api.hotfile.com") { |http|
       base_req = "/?action=getdirectdownloadlink&"
-      with_link = base_req + "link=#{link_loc}&"
+      with_link = base_req + "link=#{self.link}&"
       with_auth = with_link + username_and_password + "&digest=#{digest}"
       puts with_auth
       resp = http.get( with_auth)
