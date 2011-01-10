@@ -86,7 +86,7 @@ class Download < ActiveRecord::Base
   
   
   def execute_download
-    if download.status_download  and self.type_id != 0
+    if self.status_download  and self.type_id != 0
       # download for real
       if self.type_id == 1 # hotfile
          download_hotfile
