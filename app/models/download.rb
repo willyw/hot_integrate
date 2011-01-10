@@ -235,7 +235,7 @@ class Download < ActiveRecord::Base
     puts "Done with moving the file to the source"
     puts "checking for the upload"
     # wait_for_upload
-    self.delay_wait_for_upload :run_at => 30.seconds.from_now
+    self.delay.wait_for_upload :run_at => 30.seconds.from_now
 
   end
   
