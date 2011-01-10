@@ -244,10 +244,17 @@ class Download < ActiveRecord::Base
     end
     
     puts "Gonna enter the loop of waiting"
-    
+    puts "But, let's sleep for 1 minute"
+    puts "Time now is #{Time.now}"
+    sleep 1.minutes.to_i
+    puts "Time after sleeping is #{Time.now}"
     time_to_wait = -1
+    counter = 0 
     while time_to_wait != 0 do 
+      counter = counter + 1
+      puts "In the loop number #{counter}"
       upload_status =  `~/bin/dropbox.py status`
+      puts "The upload_status is #{upload_status}"
       if upload_status != "Idle\n"
         inner_regex = /\((.*)\)/
         if  upload_status.match inner_regex
@@ -256,7 +263,7 @@ class Download < ActiveRecord::Base
           numerator = upload_data[2]
           time_unit = upload_data[3]
           time_to_wait = ""
-          # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
+          puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
           if time_unit == "min"
             time_to_wait =  numerator.to_i.minutes.to_i
           elsif time_unit == "sec"
@@ -268,7 +275,7 @@ class Download < ActiveRecord::Base
         else
           time_to_wait = 1.minutes.to_i
         end
-        puts "Goa sleep for #{time_to_wait} seconds"
+        puts "Gonna sleep for #{time_to_wait} seconds"
         sleep time_to_wait
       else
         self.status_upload = true
