@@ -227,6 +227,63 @@ class Download < ActiveRecord::Base
     source = Dir.pwd + "/#{filename}"
     destination = "/home/app/Dropbox"
     FileUtils.move source, destination
+    self.status_download = true
+    self.save
+    self.is_upload_done?
+      # end of this download
+    
+      # wait x seconds, 
+      # poll it again to check for the upload readiness
+    
+    
+  end
+  
+  def is_upload_done?
+    if self.status_upload 
+      break
+    else
+      puts "In the is_upload_done?\n"*20
+      upload_status =  `~/bin/dropbox.py status`
+      #  parse this 
+      # Uploading 1 file (2014 KB/sec, 26 sec left)\n
+      # sec_regex = /\( ( *\d+ (sec|min) left)\) /
+      #     test_regex = /(sec|min)/  # working
+
+      if upload_status != "Idle\n"
+        string_result = "ploading 1 file (2014 KB/sec, 26 sec left)\n"
+        inner_regex = /\((.*)\)/
+        # it will give "2014 KB/sec, 26 sec left"
+        upload_status.match inner_regex
+        upload_data = $1.split(" ")
+        speed = upload_data[0]
+        numerator = upload_data[2]
+        time_unit = upload_data[3]
+        time_to_send = ""
+        # puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
+        if time_unit == "min"
+          time_to_send = Proc.new { numerator.to_i.minutes.from_now }
+        elsif time_unit == "sec"
+          time_to_send = Proc.new {numerator.to_i.seconds.from_now }
+        else
+          time_to_send = Proc.new { numerator.to_i.hours.from_now }
+        end
+
+        puts "next call is #{numerator} #{time_unit} from now\n"*10
+        self.delay.is_upload_done? :run_at => time_to_send
+
+        # Uploading 1 file (706.4 KB/sec, 3 min left)\n
+        # "Uploading 1 file...\nDownloading file list...\n"
+        # "Idle\n"
+        # if not "Idle\n", check 5 mins later, or wait for callback
+      else
+        self.status_upload = true
+        self.save
+      end
+    end
+      
+    
+    
+    
   end
 
 end

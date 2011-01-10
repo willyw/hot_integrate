@@ -4,7 +4,9 @@ class CreateDownloads < ActiveRecord::Migration
       t.string :filename  # after download, fill this filename
       t.string :link  # the download link
       t.boolean  :status_download , :default => false
+      t.boolean :status_upload , :default => false
       t.integer :status_file , :default => 2 # 2 = unknown
+      
       # 1 = alive
       # 0 = dead
       
