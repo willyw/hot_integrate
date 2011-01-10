@@ -241,51 +241,63 @@ class Download < ActiveRecord::Base
   def wait_for_upload
     if self.status_upload
       return 
+    else
+      puts "The time now is #{Time.now}"
+      self.delay.wait_for_upload :run_at => Proc.new { 30.seconds.from_now }
+      puts "The after delay time is #{Time.now}"
     end
-    
-    puts "Gonna enter the loop of waiting"
-    puts "But, let's sleep for 1 minute"
-    puts "Time now is #{Time.now}"
-    sleep 1.minutes.to_i
-    puts "Time after sleeping is #{Time.now}"
-    time_to_wait = -1
-    counter = 0 
-    while time_to_wait != 0 do 
-      counter = counter + 1
-      puts "In the loop number #{counter}"
-      upload_status =  `~/bin/dropbox.py status`
-      puts "The upload_status is #{upload_status}"
-      if upload_status != "Idle\n"
-        inner_regex = /\((.*)\)/
-        if  upload_status.match inner_regex
-          upload_data = $1.split(" ")
-          speed = upload_data[0]
-          numerator = upload_data[2]
-          time_unit = upload_data[3]
-          time_to_wait = ""
-          puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
-          if time_unit == "min"
-            time_to_wait =  numerator.to_i.minutes.to_i
-          elsif time_unit == "sec"
-            time_to_wait =  numerator.to_i.seconds.to_i
-          else
-            time_to_wait = numerator.to_i.hours.to_i
-          end
-          puts "next call is #{numerator} #{time_unit} from now\n"*10
-        else
-          time_to_wait = 1.minutes.to_i
-        end
-        puts "Gonna sleep for #{time_to_wait} seconds"
-        sleep time_to_wait
-      else
-        self.status_upload = true
-        self.save
-        time_to_wait = 0
-      end
-    end
-    
   end
-    
+  
+  # def wait_for_upload
+  #    if self.status_upload
+  #      return 
+  #    end
+  #    
+  #    puts "Gonna enter the loop of waiting"
+  #    puts "But, let's sleep for 1 minute"
+  #    puts "Time now is #{Time.now}"
+  #    sleep 1.minutes.to_i
+  #    puts "Time after sleeping is #{Time.now}"
+  #    time_to_wait = -1
+  #    counter = 0 
+  #    while time_to_wait != 0 do 
+  #      counter = counter + 1
+  #      puts "In the loop number #{counter}"
+  #      upload_status =  `~/bin/dropbox.py status`
+  #      puts "The upload_status is #{upload_status}"
+  #      if upload_status != "Idle\n"
+  #        inner_regex = /\((.*)\)/
+  #        if  upload_status.match inner_regex
+  #          upload_data = $1.split(" ")
+  #          speed = upload_data[0]
+  #          numerator = upload_data[2]
+  #          time_unit = upload_data[3]
+  #          time_to_wait = ""
+  #          puts "The speed is #{speed}, the numerator is #{numerator}, the unit is #{time_unit}"
+  #          if time_unit == "min"
+  #            time_to_wait =  numerator.to_i.minutes.to_i
+  #          elsif time_unit == "sec"
+  #            time_to_wait =  numerator.to_i.seconds.to_i
+  #          else
+  #            time_to_wait = numerator.to_i.hours.to_i
+  #          end
+  #          puts "next call is #{numerator} #{time_unit} from now\n"*10
+  #        else
+  #          time_to_wait = 1.minutes.to_i
+  #        end
+  #        puts "Gonna sleep for #{time_to_wait} seconds"
+  #        # sleep time_to_wait
+  #        # sleep == make the whole system sleep as unity
+  #        # it means, the uploading sleep as well
+  #      else
+  #        self.status_upload = true
+  #        self.save
+  #        time_to_wait = 0
+  #      end
+  #    end
+  #    
+  #  end
+  #    
   def is_upload_done?
     if self.status_upload 
       break
