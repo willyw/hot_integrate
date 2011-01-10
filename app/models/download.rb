@@ -243,7 +243,7 @@ class Download < ActiveRecord::Base
       return 
     else
       puts "The time now is #{Time.now}"
-      self.delay.wait_for_upload :run_at => Proc.new { 30.seconds.from_now }
+      self.delay.wait_for_upload  30.seconds.from_now 
       puts "The after delay time is #{Time.now}"
     end
   end
