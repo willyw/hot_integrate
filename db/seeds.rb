@@ -7,3 +7,6 @@
 #   Major.create(:name => 'Daley', :city => cities.first)
 User.create :email => "rajakuraemas@gmail.com", :password =>"willy", 
           :password_confirmation => "willy"
+          
+User.create :email => "anggi.suharja@gmail.com", :password => "anggi.monyong",
+          :password_confirmation => "anggi.monyong"
