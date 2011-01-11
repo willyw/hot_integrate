@@ -12,7 +12,7 @@ ahahha, inside the show_files
 	Hello there, you have <%= @downloads.count %> downloads in queue
 </h2>
 <ul>
-	<% for download in @downloads %>
+	<% for download in @downloads.reverse %>
 		<li>
 			<%= download.link %>
 		</li>
