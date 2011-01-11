@@ -227,7 +227,7 @@ class Download < ActiveRecord::Base
     puts "The filename is #{filename}"
     source = Dir.pwd + "/#{filename}"
     destination = "/home/app/Dropbox"
-    FileUtils.move source, ( destination + "/" + download.user.email )
+    FileUtils.move source, ( destination + "/" + self.user.email )
     
     
     self.status_download = true
