@@ -10,6 +10,7 @@ class DownloadsController < ApplicationController
   
   def show_two_face
     if current_user
+      @downloads = current_user.downloads
       render :file => "/downloads/show_files.html.erb"  
     else
       render :file => "/downloads/welcome.html.erb"
