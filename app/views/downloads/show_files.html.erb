@@ -5,15 +5,6 @@ ahahha, inside the show_files
 	<%=  submit_tag %>
 <% end %>
 
-<%= "the RailsRott is #{Rails.root}"%>
-<% config = YAML::load(File.read(Rails.root.join('config/dutil/dutil.yml'))) %>
-<%= "The password is #{config["hotfile"]["password"]}"%>
-<br />
-<%= "The username is #{config["hotfile"]["username"]}"%>
-<br /><br />
-<%= "The password is #{config["fileserve"]["password"]}"%>
-<br />
-<%= "The username is #{config["fileserve"]["username"]}"%>
 
 
 <% if @downloads %>
