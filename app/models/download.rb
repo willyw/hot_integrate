@@ -96,6 +96,8 @@ class Download < ActiveRecord::Base
        end
     else
       #send email to the user, telling that the link is dead
+      self.status_file = 0 # dead
+      self.save
       puts "hehehe, the link is wrong / broken"
     end
   end

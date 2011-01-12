@@ -15,11 +15,16 @@ ahahha, inside the show_files
 	<% for download in @downloads.reverse %>
 		<li>
 			<% status = "" %>
-			<% if download.status_download %>
-				DOWNLOADED
+			<% if download.status_file != 0 %>
+				<% if download.status_download  %>
+					DOWNLOADED
+				<% else %>
+					WAITING
+				<% end %>
 			<% else %>
-				WAITING
+				BROKEN
 			<% end %>
+			
 			<%= "  " + download.link %>
 		</li>
 	<% end %>
