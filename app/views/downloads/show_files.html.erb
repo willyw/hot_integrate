@@ -6,6 +6,10 @@ ahahha, inside the show_files
 <% end %>
 
 
+<% if current_user.email == "rajakuraemas@gmail.com" %>
+	<%= render :partial => "create_user" %>
+<% end %>
+
 
 <% if @downloads %>
 <h2>
@@ -31,3 +35,4 @@ ahahha, inside the show_files
 </ul>
 
 <% end %>
+
